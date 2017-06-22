@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/joaoubaldo/esp8266_dht_influxdb.svg?branch=master)](https://travis-ci.org/joaoubaldo/esp8266_dht_influxdb)
+
 # Overview
 ESP8266 DHT sensor probe that pushes readings to influxdb
 
