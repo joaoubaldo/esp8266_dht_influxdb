@@ -5,6 +5,11 @@ ESP8266 DHT sensor probe that pushes readings to influxdb
 - PlatformIO  
 - ESP8266 board (only tested with D1 Mini)
 
+### Connections diagram
+
+![Connections](/connections.png)
+
+
 ## Usage requirements
 - influxdb accessible from the wifi network where the probe connects to
 
