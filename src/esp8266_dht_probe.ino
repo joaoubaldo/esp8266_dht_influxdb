@@ -28,10 +28,12 @@ void setup() {
     digitalWrite(DHTPWRPIN, HIGH);
     dht.begin();
 
+    WiFi.mode(WIFI_STA);
+    WiFi.setOutputPower(0.0);
     WiFi.begin(WIFI_SSID, WIFI_PASSWD);
 
     while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
+        delay(100);
     }
     #ifdef USE_SERIAL
         Serial.println("WiFi connected");
