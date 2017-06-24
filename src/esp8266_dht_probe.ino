@@ -6,7 +6,7 @@
 #define DHTPWRPIN D3
 #define DHTPIN D4     // what digital pin the DHT22 is conected to
 #define DHTTYPE DHT22   // there are multiple kinds of DHT sensors
-#define USE_SERIAL
+// #define USE_SERIAL
 
 char buffer[128];
 
