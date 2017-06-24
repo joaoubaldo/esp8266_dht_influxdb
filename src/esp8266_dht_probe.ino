@@ -7,6 +7,9 @@
 #define DHTPIN D4     // what digital pin the DHT22 is conected to
 #define DHTTYPE DHT22   // there are multiple kinds of DHT sensors
 // #define USE_SERIAL
+#define REPORT_RAIN
+#define RAINPIN D2
+
 
 char buffer[128];
 
@@ -61,6 +64,13 @@ void setup() {
     sprintf(buffer, "temperature%s value=%d.%02d", INFLUXDB_TAGS, (int)t, (int)(t*100)%100);
     http.POST(buffer);
     http.end();
+
+    #ifdef REPORT_RAIN
+    http.begin(INFLUXDB_URI);
+    sprintf(buffer, "rain%s value=%d", INFLUXDB_TAGS, 1 - digitalRead(RAINPIN));
+    http.POST(buffer);
+    http.end();
+    #endif
 
     http.begin(INFLUXDB_URI);
     sprintf(buffer, "run_time%s value=%d", INFLUXDB_TAGS, millis() - start);
