@@ -14,6 +14,8 @@ DHT dht(DHTPIN, DHTTYPE);
 HTTPClient http;
 
 void setup() {
+    unsigned long start = millis();
+
     pinMode(DHTPWRPIN, OUTPUT);
 
     #ifdef USE_SERIAL
@@ -54,11 +56,18 @@ void setup() {
     sprintf(buffer, "humidity%s value=%d.%02d", INFLUXDB_TAGS, (int)h, (int)(h*100)%100);
     http.POST(buffer);
     http.end();
+
     http.begin(INFLUXDB_URI);
     sprintf(buffer, "temperature%s value=%d.%02d", INFLUXDB_TAGS, (int)t, (int)(t*100)%100);
     http.POST(buffer);
     http.end();
-    delay(1000);
+
+    http.begin(INFLUXDB_URI);
+    sprintf(buffer, "run_time%s value=%d", INFLUXDB_TAGS, millis() - start);
+    http.POST(buffer);
+    http.end();
+
+    delay(100);
     ESP.deepSleep(DEEPSLEEP); // 20e6 is 20 microseconds
 }
 
