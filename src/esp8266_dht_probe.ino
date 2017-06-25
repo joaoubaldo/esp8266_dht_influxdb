@@ -17,6 +17,7 @@
 #endif
 
 #define REPORT_RAIN
+#define RAINPWRPIN D1
 #define RAINPIN D2
 
 #define REPORT_EXEC_TIME
@@ -32,6 +33,10 @@ void setup() {
     unsigned long start = millis();
 
     pinMode(DHTPWRPIN, OUTPUT);
+
+    #ifdef REPORT_RAIN
+    pinMode(RAINPWRPIN, OUTPUT);
+    #endif
 
     #ifdef USE_SERIAL
         Serial.begin(9600);
@@ -52,9 +57,11 @@ void setup() {
     while (WiFi.status() != WL_CONNECTED) {
         delay(100);
     }
+
     #ifdef USE_SERIAL
         Serial.println("WiFi connected");
     #endif
+
     float h = dht.readHumidity();
     float t = dht.readTemperature();
     float f = dht.readTemperature(true);
@@ -78,10 +85,13 @@ void setup() {
     http.end();
 
     #ifdef REPORT_RAIN
+    digitalWrite(RAINPWRPIN, HIGH);
+    delay(100);
     http.begin(INFLUXDB_URI);
     sprintf(buffer, "rain%s value=%d", INFLUXDB_TAGS, 1 - digitalRead(RAINPIN));
     http.POST(buffer);
     http.end();
+    digitalWrite(RAINPWRPIN, LOW);
     #endif
 
     #ifdef REPORT_BAT_VOLTAGE
