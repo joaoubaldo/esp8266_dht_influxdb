@@ -71,19 +71,18 @@ void setup() {
         #ifdef USE_SERIAL
             Serial.println("Failed to read from DHT");
         #endif
-        ESP.deepSleep(5e6);
+    } else {
+        http.begin(INFLUXDB_URI);
+        sprintf(buffer, "humidity%s value=%d.%02d", INFLUXDB_TAGS, (int)h, (int)(h*100)%100);
+        http.POST(buffer);
+        http.end();
+
+        http.begin(INFLUXDB_URI);
+        sprintf(buffer, "temperature%s value=%d.%02d", INFLUXDB_TAGS, (int)t, (int)(t*100)%100);
+        http.POST(buffer);
+        http.end();
     }
-
-    http.begin(INFLUXDB_URI);
-    sprintf(buffer, "humidity%s value=%d.%02d", INFLUXDB_TAGS, (int)h, (int)(h*100)%100);
-    http.POST(buffer);
-    http.end();
-
-    http.begin(INFLUXDB_URI);
-    sprintf(buffer, "temperature%s value=%d.%02d", INFLUXDB_TAGS, (int)t, (int)(t*100)%100);
-    http.POST(buffer);
-    http.end();
-
+    
     #ifdef REPORT_RAIN
     digitalWrite(RAINPWRPIN, HIGH);
     delay(100);
