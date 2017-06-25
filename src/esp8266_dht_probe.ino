@@ -6,12 +6,24 @@
 #define DHTPWRPIN D3
 #define DHTPIN D4     // what digital pin the DHT22 is conected to
 #define DHTTYPE DHT22   // there are multiple kinds of DHT sensors
-// #define USE_SERIAL
+
+#define REPORT_BAT_VOLTAGE
+
+#ifdef REPORT_BAT_VOLTAGE
+#define V_DIV_IN 4.3
+#define V_DIV_R1 22000
+#define V_DIV_R2 65000  // this v. divider should output lower than 3.3v
+#define V_DIV_SCALE V_DIV_IN/((V_DIV_IN*V_DIV_R2)/(V_DIV_R1+V_DIV_R2))
+#endif
+
 #define REPORT_RAIN
 #define RAINPIN D2
 
+#define REPORT_EXEC_TIME
 
-char buffer[128];
+// #define USE_SERIAL
+
+char buffer[256];
 
 DHT dht(DHTPIN, DHTTYPE);
 HTTPClient http;
@@ -72,10 +84,20 @@ void setup() {
     http.end();
     #endif
 
+    #ifdef REPORT_BAT_VOLTAGE
     http.begin(INFLUXDB_URI);
-    sprintf(buffer, "run_time%s value=%d", INFLUXDB_TAGS, millis() - start);
+    float v = 3.3 * ((analogRead(A0)*V_DIV_SCALE)/1024.0);
+    sprintf(buffer, "bat_volt%s value=%d.%02d", INFLUXDB_TAGS, (int)v, (int)(v*100)%100);
     http.POST(buffer);
     http.end();
+    #endif
+
+    #ifdef REPORT_EXEC_TIME
+    http.begin(INFLUXDB_URI);
+    sprintf(buffer, "exec_time%s value=%d", INFLUXDB_TAGS, millis() - start);
+    http.POST(buffer);
+    http.end();
+    #endif
 
     delay(100);
     ESP.deepSleep(DEEPSLEEP); // 20e6 is 20 microseconds
