@@ -22,6 +22,7 @@
 
 #define REPORT_EXEC_TIME
 
+#define MAX_WIFI_WAIT_MS 10000
 // #define USE_SERIAL
 
 char buffer[256];
@@ -55,7 +56,10 @@ void setup() {
     WiFi.begin(WIFI_SSID, WIFI_PASSWD);
 
     while (WiFi.status() != WL_CONNECTED) {
-        delay(100);
+        delay(1000);
+        if (millis() - start >= MAX_WIFI_WAIT_MS) {
+            ESP.deepSleep(DEEPSLEEP);
+        }
     }
 
     #ifdef USE_SERIAL
@@ -64,10 +68,10 @@ void setup() {
 
     float h = dht.readHumidity();
     float t = dht.readTemperature();
-    float f = dht.readTemperature(true);
+    // float f = dht.readTemperature(true);
     digitalWrite(DHTPWRPIN, LOW);
 
-    if (isnan(h) || isnan(t) || isnan(f)) {
+    if (isnan(h) || isnan(t)) {
         #ifdef USE_SERIAL
             Serial.println("Failed to read from DHT");
         #endif
@@ -82,7 +86,7 @@ void setup() {
         http.POST(buffer);
         http.end();
     }
-    
+
     #ifdef REPORT_RAIN
     digitalWrite(RAINPWRPIN, HIGH);
     delay(100);
