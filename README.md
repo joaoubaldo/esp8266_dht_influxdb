@@ -22,6 +22,8 @@ ESP8266 DHT sensor probe that pushes readings to influxdb
 - INFLUXDB_TAGS - influxdb tags to use for all readings. Use "" if none is needed. Be careful with length! Internal string buffer is 128 bytes.
 - DEEPSLEEP - Time to deep sleep (usecs). 15e6 is 15 seconds
 
+  Note: these flags can be defined in `platformio.ini` and/or defined as environment variables before calling platformio.
+
 ## Building
     PLATFORMIO_BUILD_FLAGS='-DWIFI_SSID=\"MY_SSID\" -DWIFI_PASSWD=\"MY_PASSWD\" -DINFLUXDB_URI=\"http://INFLUXDB_HOST:INFLUXDB_PORT/write?db=INFLUXDB_DB\" -DINFLUXDB_TAGS=\",KEY1=VALUE,KEY2=VALUE\" -DDEEPSLEEP="15e6"' platformio run
 
